@@ -1,0 +1,135 @@
+model Company {
+  id           String  @id @default(uuid())
+  name         String
+  trade_name   String
+  cnpj         String  @unique
+  phone        String
+  email        String  @unique
+  street       String?
+  neighborhood String?
+  city         String?
+  status       String?
+  country      String
+  active       Boolean @default(true)
+
+  created_at      DateTime @default(now())
+  created_by      String
+  created_by_user User     @relation("CompanyCreatedBy", fields: [created_by], references: [id], map: "FK_created_by_user_company")
+
+  updated_at      DateTime? @updatedAt
+  updated_by      String?
+  updated_by_user User?     @relation("CompanyUpdatedBy", fields: [updated_by], references: [id], map: "FK_updated_by_user_company")
+
+  users   User[]          @relation("CompanyUsers")
+  modules CompanyModule[] @relation("CompanyModules")
+  roles   Role[]          @relation("CompanyRoles")
+
+  @@map("companies")
+}
+
+model User {
+  id         String  @id @default(uuid())
+  company_id String
+  company    Company @relation("CompanyUsers", fields: [company_id], references: [id], map: "FK_user_company_id")
+  name       String
+  phone      String?
+  email      String  @unique
+  password   String
+  active     Boolean @default(true)
+
+  created_at      DateTime @default(now())
+  created_by      String
+  created_by_user User     @relation("UserCreatedBy", fields: [created_by], references: [id], map: "FK_created_by_user")
+
+  updated_at      DateTime? @updatedAt
+  updated_by      String?
+  updated_by_user User?     @relation("UserUpdatedBy", fields: [updated_by], references: [id], map: "FK_updated_by_user")
+
+  created_companies Company[]  @relation("CompanyCreatedBy")
+  updated_companies Company[]  @relation("CompanyUpdatedBy")
+  created_users     User[]     @relation("UserCreatedBy")
+  updated_users     User[]     @relation("UserUpdatedBy")
+  created_roles     Role[]     @relation("RoleCreatedBy")
+  updated_roles     Role[]     @relation("RoleUpdatedBy")
+  roles             UserRole[] @relation("UserRoles")
+
+  @@map("users")
+}
+
+model Module {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  name        String
+  description String?
+
+  companies   CompanyModule[] @relation("ModulesPerCompany")
+  permissions Permission[]    @relation("ModulePermissions")
+
+  @@map("modules")
+}
+
+model CompanyModule {
+  id         String  @id @default(uuid())
+  company_id String
+  company    Company @relation("CompanyModules", fields: [company_id], references: [id], map: "FK_company_module_company_id")
+  module_id  String
+  module     Module  @relation("ModulesPerCompany", fields: [module_id], references: [id], map: "FK_company_module_module_id")
+  active     Boolean @default(true)
+
+  @@unique([company_id, module_id])
+  @@map("company_modules")
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  module_id   String
+  module      Module  @relation("ModulePermissions", fields: [module_id], references: [id], map: "FK_permission_module_id")
+  slug        String  @unique
+  name        String
+  description String?
+
+  roles RolePermission[] @relation("PermissionRoles")
+
+  @@map("permissions")
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  company_id  String
+  company     Company @relation("CompanyRoles", fields: [company_id], references: [id], map: "FK_role_company_id")
+  name        String
+  description String?
+
+  created_at      DateTime @default(now())
+  created_by      String
+  created_by_user User     @relation("RoleCreatedBy", fields: [created_by], references: [id], map: "FK_created_by_user_role")
+
+  updated_at      DateTime? @updatedAt
+  updated_by      String?
+  updated_by_user User?     @relation("RoleUpdatedBy", fields: [updated_by], references: [id], map: "FK_updated_by_user_role")
+
+  permissions RolePermission[] @relation("RolePermissions")
+  users       UserRole[]       @relation("RoleUsers")
+
+  @@map("roles")
+}
+
+model RolePermission {
+  role_id       String
+  role          Role       @relation("RolePermissions", fields: [role_id], references: [id], map: "FK_role_permission_role_id")
+  permission_id String
+  permission    Permission @relation("PermissionRoles", fields: [permission_id], references: [id], map: "FK_role_permission_permission_id")
+
+  @@id([role_id, permission_id])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  role_id String
+  role    Role   @relation("RoleUsers", fields: [role_id], references: [id], map: "FK_user_role_role_id")
+  user_id String
+  user    User   @relation("UserRoles", fields: [user_id], references: [id], map: "FK_user_role_user_id")
+
+  @@id([role_id, user_id])
+  @@map("user_roles")
+}
