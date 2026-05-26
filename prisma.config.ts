@@ -5,6 +5,7 @@ export default defineConfig({
   schema: "src/database/",
   migrations: {
     path: "src/database/migrations",
+    seed: "tsx src/database/seed",
   },
   datasource: {
     url: env.DATABASE_URL,

@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "companies" ALTER COLUMN "trade_name" DROP NOT NULL,
+ALTER COLUMN "phone" DROP NOT NULL,
+ALTER COLUMN "country" DROP NOT NULL;
