@@ -108,12 +108,11 @@ async function main() {
   });
 }
 
-main()
-  .then(() => {
-    console.log("Seed concluído com sucesso!");
-    process.exit(0);
-  })
-  .catch((e) => {
-    console.error("Erro no seed:", e);
-    process.exit(1);
-  });
+try {
+  await main();
+  console.log("Seed concluído com sucesso!");
+  process.exit(0);
+} catch (e) {
+  console.error("Erro no seed:", e);
+  process.exit(1);
+}
