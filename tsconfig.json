@@ -5,7 +5,7 @@
     "target": "ES2023",
     "lib": ["es2022"],
     "types": ["node"],
-    "ignoreDeprecations": 5.0,
+    "ignoreDeprecations": "6.0",
 
     "rootDir": "src",
     "outDir": "dist",
