@@ -27,7 +27,7 @@ async function main() {
     });
 
     const module = await db.module.upsert({
-      where: { slug: "admin" },
+      where: { slug: "global.admin" },
       update: {},
       create: {
         slug: "global.admin",
